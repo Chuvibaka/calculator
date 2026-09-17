@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdexcept>
 
 class Calculator
 {
@@ -18,23 +19,27 @@ public:
 		{
 			memory = memory + value2;
 		}
-		if (op == '-')
+		else if (op == '-')
 		{
 			memory = memory - value2;
 		}
-		if (op == '*')
+		else if (op == '*')
 		{
 			memory = memory * value2;
 		}
-		if (op == '/')
+		else if (op == '/')
 		{
 			if (!value2)
 			{
-				std::cout << "You cannot divide by 0\n";
-				return *this;
+			throw std::domain_error("Division by zero");
 			}
 			memory = memory / value2;
 		}
+		else
+		{
+			throw std::invalid_argument("Unsupported operation");
+		}
+
 		return *this;
 	}
 
@@ -55,23 +60,27 @@ public:
 		{
 			result = value1 + value2;
 		}
-		if (op == '-')
+		else if (op == '-')
 		{
 			result = value1 - value2;
 		}
-		if (op == '*')
+		else if (op == '*')
 		{
 			result = value1 * value2;
 		}
-		if (op == '/')
+		else if (op == '/')
 		{
 			if (!value2)
 			{
-				std::cout << "You cannot divide by 0\n";
-				return 0;
+				throw std::domain_error("Division by zero");
 			}
 			result = value1 / value2;
 		}
+		else
+		{
+			throw std::invalid_argument("Unsupported operation");
+		}
+
 		return result;
 	}
 
@@ -97,8 +106,7 @@ public:
 	{
 		if (!value)
 		{
-			std::cout << "You cannot divide by 0\n";
-			return *this;
+			throw std::domain_error("Division by zero");
 		}
 		memory /= value;
 		return *this;
@@ -126,8 +134,7 @@ public:
 	{
 		if (!value)
 		{
-			std::cout << "You cannot divide by 0\n";
-			return *this;
+			throw std::domain_error("Division by zero");
 		}
 		memory /= value;
 		return *this;
@@ -181,8 +188,26 @@ int main()
 	std::cout << "4 *= 2 = " << calcOp.getCurrentValue() << "\n";
 	calcOp /= 2;
 	std::cout << "8 /= 2 = " << calcOp.getCurrentValue() << "\n";
-	calcOp /= 0;
-	std::cout << "4 /= 0 = " << calcOp.getCurrentValue() << "\n";
+
+	try
+	{
+		calcOp /= 0;
+		std::cout << "4 /= 0 = " << calcOp.getCurrentValue() << "\n";
+	}
+	catch (const std::domain_error& e)
+	{
+		std::cout << "Caught exception: " << e.what() << "\n";
+	}
+
+	try
+	{
+		calcOp.calculate('%', 5);
+		std::cout << "This line will not run\n";
+	}
+	catch (const std::invalid_argument& e)
+	{
+		std::cout << "Caught exception: " << e.what() << "\n";
+	}
 
 	Calculator calc3;
 
@@ -204,7 +229,21 @@ int main()
 		}
 
 		std::cin >> value;
-		std::cout << "= " << calc3.calculate(operation, value).getCurrentValue() << "\n";
+
+		try
+		{
+			float result = calc3.calculate(operation, value).getCurrentValue();
+			std::cout << "= " << result << "\n";
+
+		}
+		catch (const std::domain_error& e)
+		{
+			std::cout << "Error: " << e.what() << "\n";
+		}
+		catch (const std::invalid_argument& e)
+		{
+			std::cout << "Error: " << e.what() << "\n";
+		}
 	}
 
 	return 0;
