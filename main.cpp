@@ -75,6 +75,64 @@ public:
 		return result;
 	}
 
+	Calculator& operator+(int value)
+	{
+		memory += value;
+		return *this;
+	}
+
+	Calculator& operator-(int value)
+	{
+		memory -= value;
+		return *this;
+	}
+
+	Calculator& operator*(int value)
+	{
+		memory *= value;
+		return *this;
+	}
+
+	Calculator& operator/(int value)
+	{
+		if (!value)
+		{
+			std::cout << "You cannot divide by 0\n";
+			return *this;
+		}
+		memory /= value;
+		return *this;
+	}
+
+	Calculator& operator+=(int value)
+	{
+		memory += value;
+		return *this;
+	}
+
+	Calculator& operator-=(int value)
+	{
+		memory -= value;
+		return *this;
+	}
+
+	Calculator& operator*=(int value)
+	{
+		memory *= value;
+		return *this;
+	}
+
+	Calculator& operator/=(int value)
+	{
+		if (!value)
+		{
+			std::cout << "You cannot divide by 0\n";
+			return *this;
+		}
+		memory /= value;
+		return *this;
+	}
+
 private:
 	float memory = 0;
 };
@@ -108,6 +166,23 @@ int main()
 	std::cout << "Static method (no object needed):\n";
 	std::cout << "10 + 10 = " << Calculator::calculate(10, 10, '+') << "\n";
 
+	Calculator calcOp;
+	std::cout << "Operator overload:\n";
+	std::cout << "0 + 5 = " << (calcOp + 5).getCurrentValue() << "\n";
+	std::cout << "5 - 3 = " << (calcOp - 3).getCurrentValue() << "\n";
+	std::cout << "2 * 2 = " << (calcOp * 2).getCurrentValue() << "\n";
+	std::cout << "4 / 2 = " << (calcOp / 2).getCurrentValue() << "\n";
+
+	calcOp += 5;
+	std::cout << "2 += 5 = " << calcOp.getCurrentValue() << "\n";
+	calcOp -= 3;
+	std::cout << "7 -= 3 = " << calcOp.getCurrentValue() << "\n";
+	calcOp *= 2;
+	std::cout << "4 *= 2 = " << calcOp.getCurrentValue() << "\n";
+	calcOp /= 2;
+	std::cout << "8 /= 2 = " << calcOp.getCurrentValue() << "\n";
+	calcOp /= 0;
+	std::cout << "4 /= 0 = " << calcOp.getCurrentValue() << "\n";
 
 	Calculator calc3;
 
