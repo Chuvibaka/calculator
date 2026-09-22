@@ -12,7 +12,7 @@ public:
 		memory = startValue;
 	}
 
-	float calculate(char op, float value2)
+	Calculator& calculate(char op, float value2)
 	{
 		if (op == '+')
 		{
@@ -31,10 +31,15 @@ public:
 			if (!value2)
 			{
 				std::cout << "You cannot divide by 0\n";
-				return memory;
+				return *this;
 			}
 			memory = memory / value2;
 		}
+		return *this;
+	}
+
+	float getCurrentValue() const
+	{
 		return memory;
 	}
 
@@ -43,7 +48,7 @@ public:
 		memory = start;
 	}
 
-	float calculate(float value1, float value2, char op)
+	static float calculate(float value1, float value2, char op)
 	{
 		float result = 0;
 		if (op == '+')
@@ -79,19 +84,30 @@ int main()
 	Calculator calc0;
 
 	std::cout << "Default constructor:\n";
-	std::cout << "0 + 5 = " << calc0.calculate('+', 5) << "\n";
-	std::cout << "5 * 3 = " << calc0.calculate('*', 3) << "\n";
+	std::cout << "0 + 5 = " << calc0.calculate('+', 5).getCurrentValue() << "\n";
+	std::cout << "5 * 3 = " << calc0.calculate('*', 3).getCurrentValue() << "\n";
 
 	Calculator calc1 = 10;
 
 	std::cout << "Constructor with start value 10:\n";
-	std::cout << "10 - 10 = " << calc1.calculate('-', 10) << "\n";
-	std::cout << "0 + 7 = " << calc1.calculate('+', 7) << "\n";
+	std::cout << "10 - 10 = " << calc1.calculate('-', 10).getCurrentValue() << "\n";
+	std::cout << "0 + 7 = " << calc1.calculate('+', 7).getCurrentValue() << "\n";
 
 	Calculator calc2(100);
 
 	std::cout << "Constructor with start value 100:\n";
-	std::cout << "100 / 4 = " << calc2.calculate('/', 4) << "\n";
+	std::cout << "100 / 4 = " << calc2.calculate('/', 4).getCurrentValue() << "\n";
+
+	Calculator calcChain;
+
+	std::cout << "Chain:\n";
+	std::cout << "((0 + 2) - 4) * 5 = "
+		<< calcChain.calculate('+', 2).calculate('-', 4).calculate('*', 5).getCurrentValue()
+		<< "\n";
+
+	std::cout << "Static method (no object needed):\n";
+	std::cout << "10 + 10 = " << Calculator::calculate(10, 10, '+') << "\n";
+
 
 	Calculator calc3;
 
@@ -113,7 +129,7 @@ int main()
 		}
 
 		std::cin >> value;
-		std::cout << "= " << calc3.calculate(operation, value) << "\n";
+		std::cout << "= " << calc3.calculate(operation, value).getCurrentValue() << "\n";
 	}
 
 	return 0;
