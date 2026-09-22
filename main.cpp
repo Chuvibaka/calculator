@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdexcept>
 
 class Calculator
 {
@@ -18,23 +19,27 @@ public:
 		{
 			memory = memory + value2;
 		}
-		if (op == '-')
+		else if (op == '-')
 		{
 			memory = memory - value2;
 		}
-		if (op == '*')
+		else if (op == '*')
 		{
 			memory = memory * value2;
 		}
-		if (op == '/')
+		else if (op == '/')
 		{
 			if (!value2)
 			{
-				std::cout << "You cannot divide by 0\n";
-				return *this;
+			throw std::domain_error("Division by zero");
 			}
 			memory = memory / value2;
 		}
+		else
+		{
+			throw std::invalid_argument("Unsupported operation");
+		}
+
 		return *this;
 	}
 
@@ -55,24 +60,84 @@ public:
 		{
 			result = value1 + value2;
 		}
-		if (op == '-')
+		else if (op == '-')
 		{
 			result = value1 - value2;
 		}
-		if (op == '*')
+		else if (op == '*')
 		{
 			result = value1 * value2;
 		}
-		if (op == '/')
+		else if (op == '/')
 		{
 			if (!value2)
 			{
-				std::cout << "You cannot divide by 0\n";
-				return 0;
+				throw std::domain_error("Division by zero");
 			}
 			result = value1 / value2;
 		}
+		else
+		{
+			throw std::invalid_argument("Unsupported operation");
+		}
+
 		return result;
+	}
+
+	Calculator& operator+(int value)
+	{
+		memory += value;
+		return *this;
+	}
+
+	Calculator& operator-(int value)
+	{
+		memory -= value;
+		return *this;
+	}
+
+	Calculator& operator*(int value)
+	{
+		memory *= value;
+		return *this;
+	}
+
+	Calculator& operator/(int value)
+	{
+		if (!value)
+		{
+			throw std::domain_error("Division by zero");
+		}
+		memory /= value;
+		return *this;
+	}
+
+	Calculator& operator+=(int value)
+	{
+		memory += value;
+		return *this;
+	}
+
+	Calculator& operator-=(int value)
+	{
+		memory -= value;
+		return *this;
+	}
+
+	Calculator& operator*=(int value)
+	{
+		memory *= value;
+		return *this;
+	}
+
+	Calculator& operator/=(int value)
+	{
+		if (!value)
+		{
+			throw std::domain_error("Division by zero");
+		}
+		memory /= value;
+		return *this;
 	}
 
 private:
@@ -108,6 +173,41 @@ int main()
 	std::cout << "Static method (no object needed):\n";
 	std::cout << "10 + 10 = " << Calculator::calculate(10, 10, '+') << "\n";
 
+	Calculator calcOp;
+	std::cout << "Operator overload:\n";
+	std::cout << "0 + 5 = " << (calcOp + 5).getCurrentValue() << "\n";
+	std::cout << "5 - 3 = " << (calcOp - 3).getCurrentValue() << "\n";
+	std::cout << "2 * 2 = " << (calcOp * 2).getCurrentValue() << "\n";
+	std::cout << "4 / 2 = " << (calcOp / 2).getCurrentValue() << "\n";
+
+	calcOp += 5;
+	std::cout << "2 += 5 = " << calcOp.getCurrentValue() << "\n";
+	calcOp -= 3;
+	std::cout << "7 -= 3 = " << calcOp.getCurrentValue() << "\n";
+	calcOp *= 2;
+	std::cout << "4 *= 2 = " << calcOp.getCurrentValue() << "\n";
+	calcOp /= 2;
+	std::cout << "8 /= 2 = " << calcOp.getCurrentValue() << "\n";
+
+	try
+	{
+		calcOp /= 0;
+		std::cout << "4 /= 0 = " << calcOp.getCurrentValue() << "\n";
+	}
+	catch (const std::domain_error& e)
+	{
+		std::cout << "Caught exception: " << e.what() << "\n";
+	}
+
+	try
+	{
+		calcOp.calculate('%', 5);
+		std::cout << "This line will not run\n";
+	}
+	catch (const std::invalid_argument& e)
+	{
+		std::cout << "Caught exception: " << e.what() << "\n";
+	}
 
 	Calculator calc3;
 
@@ -129,7 +229,21 @@ int main()
 		}
 
 		std::cin >> value;
-		std::cout << "= " << calc3.calculate(operation, value).getCurrentValue() << "\n";
+
+		try
+		{
+			float result = calc3.calculate(operation, value).getCurrentValue();
+			std::cout << "= " << result << "\n";
+
+		}
+		catch (const std::domain_error& e)
+		{
+			std::cout << "Error: " << e.what() << "\n";
+		}
+		catch (const std::invalid_argument& e)
+		{
+			std::cout << "Error: " << e.what() << "\n";
+		}
 	}
 
 	return 0;
